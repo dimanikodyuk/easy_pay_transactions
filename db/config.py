@@ -1,5 +1,0 @@
-host = "10.15.34.75"
-user = "easy_pay_transactions"
-password = "s!K0L0B0Kf0rever"
-database = "dwh"
-secret_key = "u7P4vRaGHyNT64fF6vaC27Cp5aFD34"
