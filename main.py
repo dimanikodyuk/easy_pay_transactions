@@ -1,33 +1,27 @@
-from resources.authorization import create_app, create_session
-from db.models import insert_config, update_config, check_app, check_page
+from resources.authorization import create_app, create_page, get_data, check_data_page
+from db.models import insert_config, update_config, check_app, check_page, update_lifetime_config, insert_transaction
+from logger.logs import logger_easy_pay
+
 
 if __name__ == "__main__":
-    # pageId - не діючий
-    if check_page() == 0 or check_page() == "0":
-        # appId - не діючий (оновлюємо і appId, pageId)
-        if check_app() == 0 or check_app() == "0":
+
+    if check_page() == "0":
+        logger_easy_pay.error("main.py - оновлюємо appId та pageId")
+
+        if check_app() == "0":
             row = create_app()
-            update_config(f"'{row['appId']}'", f"'{row['pageId']}'", 1)
+            update_config(f"{row['appId']}", f"{row['pageId']}", 1)
+
         else:
-            # якщо pageId не діючий, але appId - діючий, оновлюємо лише pageId
-            row = create_session(check_app())
-            update_config(f"'{row['appId']}'", f"'{row['pageId']}'", 2)
-    else:
-        # в іншому випадку отримуємо діючий pageId для подальших запитів
-        res = check_page()
-        print(res)
+            logger_easy_pay.error("main.py - оновлюємо pageId")
+            row = create_page(check_app())
+            update_config(f"{row['appId']}", f"{row['pageId']}", 2)
 
+    v_app_id = check_app()
+    v_page_id = check_page()
+    #pages_count = check_data_page(v_app_id, v_page_id)
+    #print(f"Йдемо в цикл з кількістю ітерацій {pages_count}")
+    #get_data(v_app_id, v_page_id, 1)
 
-    #res = create_app()
-    #print(res)
-    #insert_app(res['appId'], res['pageId'])
+    get_data(v_app_id, v_page_id, 1)
 
-    """
-    check_conf = check_config()
-    if check_conf == 1:
-        create_app()
-    elif check_conf == 2:
-        create_session()
-    else:
-        3
-    """
